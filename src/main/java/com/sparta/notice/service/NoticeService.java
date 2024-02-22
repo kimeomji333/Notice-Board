@@ -4,15 +4,14 @@ import com.sparta.notice.dto.NoticeRequestDto;
 import com.sparta.notice.dto.NoticeResponseDto;
 import com.sparta.notice.entity.Notice;
 import com.sparta.notice.repository.NoticeRepository;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
 public class NoticeService {
     private final NoticeRepository noticeRepository;
 
-    public NoticeService(JdbcTemplate jdbcTemplate) {
-        this.noticeRepository = new NoticeRepository(jdbcTemplate);
+    public NoticeService(NoticeRepository noticeRepository) {
+        this.noticeRepository = noticeRepository;
     }
 
 //    public static NoticeResponseDto getNotice(Long id) {
