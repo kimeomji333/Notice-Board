@@ -7,13 +7,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 
+@Component
 public class NoticeRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -22,8 +25,9 @@ public class NoticeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // DB 저장
     public Notice save(Notice notice) {
-        // DB 저장
+
         KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
 
         String sql = "INSERT INTO notice (title, name, password, contents, date) VALUES (?, ?, ?, ?, ?)";
@@ -47,9 +51,8 @@ public class NoticeRepository {
         return notice;
     }
 
-    // 전체 조회
+    // DB 조회
     public List<NoticeResponseDto> findAll() {
-        // DB 조회
         String sql = "SELECT * FROM notice";
 
         return jdbcTemplate.query(sql, new RowMapper<NoticeResponseDto>() {
@@ -66,20 +69,6 @@ public class NoticeRepository {
             }
         });
     }
-
-
-    public void update(Long id, NoticeRequestDto requestDto) {
-        // notice 내용 수정
-        String sql = "UPDATE notice SET title = ?, name = ?, content = ? WHERE id = ?";
-        jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getName(), requestDto.getContent(), id);
-    }
-
-    public void delete(Long id) {
-        // notice 삭제
-        String sql = "DELETE FROM notice WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
 
     // 찾기 메서드 만듦
     public Notice findById(Long id) {
@@ -100,4 +89,17 @@ public class NoticeRepository {
             }
         }, id);
     }
+
+    // notice 내용 수정
+    public void update(Long id, NoticeRequestDto requestDto) {
+        String sql = "UPDATE notice SET title = ?, name = ?, content = ? WHERE id = ?";
+        jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getName(), requestDto.getContent(), id);
+    }
+
+    // notice 삭제
+    public void delete(Long id, NoticeRequestDto requestDto) {
+        String sql = "DELETE FROM notice WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
 }
