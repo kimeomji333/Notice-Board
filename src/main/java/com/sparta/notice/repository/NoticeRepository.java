@@ -47,6 +47,7 @@ public class NoticeRepository {
         return notice;
     }
 
+    // 전체 조회
     public List<NoticeResponseDto> findAll() {
         // DB 조회
         String sql = "SELECT * FROM notice";
@@ -65,6 +66,7 @@ public class NoticeRepository {
             }
         });
     }
+
 
     public void update(Long id, NoticeRequestDto requestDto) {
         // notice 내용 수정
