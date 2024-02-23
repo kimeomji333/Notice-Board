@@ -8,15 +8,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 
-@Component
+@Repository
 public class NoticeRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -30,7 +28,7 @@ public class NoticeRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
 
-        String sql = "INSERT INTO notice (title, name, password, contents, date) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO notices (title, name, password, content, date) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update( con -> {
                     PreparedStatement preparedStatement = con.prepareStatement(sql,
                             Statement.RETURN_GENERATED_KEYS);
@@ -39,7 +37,7 @@ public class NoticeRepository {
                     preparedStatement.setString(2, notice.getName());
                     preparedStatement.setString(3, notice.getPassword());
                     preparedStatement.setString(4, notice.getContent());
-                    preparedStatement.setLong(5, notice.getDate());
+                    preparedStatement.setDate(5, Date.valueOf(notice.getDate()));
                     return preparedStatement;
                 },
                 keyHolder);
@@ -53,19 +51,20 @@ public class NoticeRepository {
 
     // DB 조회
     public List<NoticeResponseDto> findAll() {
-        String sql = "SELECT * FROM notice";
+        String sql = "SELECT * FROM notices";
 
         return jdbcTemplate.query(sql, new RowMapper<NoticeResponseDto>() {
             @Override
             public NoticeResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 // SQL 의 결과로 받아온 Notice 데이터들을 NoticeResponseDto 타입으로 변환해줄 메서드 //열
-                Long id = rs.getLong("id");
+                //Long id = rs.getLong("id");
                 String title = rs.getString("title");
                 String name = rs.getString("name");
                 String password = rs.getString("password");
                 String content = rs.getString("content");
-                Long date = rs.getLong("date");
-                return new NoticeResponseDto(id, title, name, password, content, date);
+                LocalDate date = rs.getDate("date").toLocalDate();
+
+                return new NoticeResponseDto(title, name, password, content, date);
             }
         });
     }
@@ -73,7 +72,7 @@ public class NoticeRepository {
     // 찾기 메서드 만듦
     public Notice findById(Long id) {
         // DB 조회
-        String sql = "SELECT * FROM notice WHERE id = ?";
+        String sql = "SELECT * FROM notices WHERE id = ?";
 
         return jdbcTemplate.query(sql, resultSet -> {
             if(resultSet.next()) {
@@ -82,7 +81,7 @@ public class NoticeRepository {
                 notice.setName(resultSet.getString("name"));
                 notice.setPassword(resultSet.getString("password"));
                 notice.setContent(resultSet.getString("content"));
-                notice.setDate(resultSet.getLong("date"));
+                notice.setDate(resultSet.getDate("date").toLocalDate());
                 return notice;
             } else {
                 return null;
@@ -92,13 +91,13 @@ public class NoticeRepository {
 
     // notice 내용 수정
     public void update(Long id, NoticeRequestDto requestDto) {
-        String sql = "UPDATE notice SET title = ?, name = ?, content = ? WHERE id = ?";
+        String sql = "UPDATE notices SET title = ?, name = ?, content = ? WHERE id = ?";
         jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getName(), requestDto.getContent(), id);
     }
 
     // notice 삭제
-    public void delete(Long id, NoticeRequestDto requestDto) {
-        String sql = "DELETE FROM notice WHERE id = ?";
+    public void delete(Long id) {
+        String sql = "DELETE FROM notices WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 

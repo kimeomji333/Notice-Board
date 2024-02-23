@@ -4,6 +4,10 @@ import com.sparta.notice.dto.NoticeRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,7 +18,7 @@ public class Notice {
     private String name;
     private String password;
     private String content;
-    private Long date;
+    private LocalDate date;
 
     // 클라이언트에서 get 받아온 requestDto 를 위의 필드값에 넣어줌
     public Notice(NoticeRequestDto requestDto) {

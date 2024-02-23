@@ -5,11 +5,12 @@ import com.sparta.notice.dto.NoticeResponseDto;
 import com.sparta.notice.entity.Notice;
 import com.sparta.notice.repository.NoticeRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 
-@Component
+@Service
 public class NoticeService {
     private final NoticeRepository noticeRepository;
 
@@ -33,11 +34,24 @@ public class NoticeService {
         return noticeResponseDto;
     }
 
+
+    // 게시글 선택 조회
+    public NoticeResponseDto getNotice(Long id) {
+        // 해당 게시글이 DB에 존재하는지 확인.
+        Notice notice = noticeRepository.findById(id);
+        // 게시글이 없는 경우
+        if (notice == null) {
+            throw new RuntimeException("해당 게시글이 없습니다.");
+        }
+        // 게시글이 있는 경우
+        return new NoticeResponseDto(notice);
+    }
+
+
     // 게시글 전체 조회
     public List<NoticeResponseDto> getNotices() {
         // DB 조회
-         return noticeRepository.findAll();
-
+        List<NoticeResponseDto> getNoticesList = noticeRepository.findAll();
 
         // 내림차순 정렬
         List<NoticeResponseDto> resopnseListDesc = getNoticesList.stream()
@@ -46,50 +60,35 @@ public class NoticeService {
     }
 
 
-    // 게시글 선택 조회
-    public static NoticeResponseDto getNotice(Long id) {
-        // 해당 게시글이 DB에 존재하는지 확인. 해당 id 가 없을 경우
-        Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
-
-        // 해당 id 가 있을 경우
-        return new NoticeResponseDto(notice);
-    }
-
-
     // 게시글 수정
-    public Long updateNotice(Long id, NoticeRequestDto requestDto) {
+    public NoticeResponseDto updateNotice(Long id, String password, NoticeRequestDto requestDto) {
         // 해당 게시글이 DB에 존재하는지 확인
         Notice notice = noticeRepository.findById(id);
-
-        // 비밀번호 일치 여부 확인
-        if(notice.getPassword().equals(requestDto.getPassword())) {
-            // 일치하면, notice 수정
-            noticeRepository.update(id, requestDto);
-
-            return id;
-        } else {
+        // 게시글이 없는 경우
+        if (notice == null) {
+            throw new RuntimeException("해당 게시글이 없습니다.");
+        }
+        // 게시글이 있는 경우. 비밀번호 일치 여부 확인
+        if(!notice.getPassword().equals(password)) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        } else {
+            noticeRepository.update(id, requestDto);
+            return new NoticeResponseDto(notice);
         }
     }
-
 
     // 게시글 삭제
-    public Long deleteNotice(Long id, NoticeRequestDto requestDto) {
+    public Long deleteNotice(Long id, String password) {
         // 해당 게시글이 DB에 존재하는지 확인
         Notice notice = noticeRepository.findById(id);
-
-        // 비밀번호 일치 여부 확인
-        if(notice.getPassword().equals(requestDto.getPassword())) {
-            //  일치하면, notice 삭제
-            noticeRepository.delete(id, requestDto);
-
-            return id;
-        } else {
+        if (notice == null) {
+              throw new RuntimeException("해당 게시글이 없습니다.");
+        }
+        // 게시글이 있는 경우, 비밀번호 일치 여부 확인
+        if(!notice.getPassword().equals(password)) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+        noticeRepository.delete(id);
+        return id;
     }
-
-
-    
 }
