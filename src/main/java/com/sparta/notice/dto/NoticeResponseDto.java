@@ -4,14 +4,13 @@ import com.sparta.notice.entity.Notice;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 public class NoticeResponseDto {
     //private Long id;  // 게시글 구분
     private String title;
     private String name;
-    private String password; // 작성, 조회 반환시 비번 제외
+    //private String password; // 작성, 조회 반환시 비번 제외
     private String content;
     private LocalDate date;
 
@@ -19,7 +18,7 @@ public class NoticeResponseDto {
         //this.id = notice.getId();
         this.title = notice.getTitle();
         this.name = notice.getName();
-        this.password = getPassword();
+        //this.password = getPassword();
         this.content = notice.getContent();
         this.date = notice.getDate();
     }
@@ -28,7 +27,7 @@ public class NoticeResponseDto {
         //this.id = getId();
         this.title = title;
         this.name = name;
-        this.password = password;
+        //this.password = password;
         this.content = content;
         this.date = date;
     }
