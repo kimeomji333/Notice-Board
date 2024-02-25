@@ -8,5 +8,4 @@ public class NoticeRequestDto {
     private String name;
     private String password;
     private String content;
-    private Long date;
 }
