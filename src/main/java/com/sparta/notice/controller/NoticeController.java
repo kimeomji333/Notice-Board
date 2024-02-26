@@ -34,7 +34,7 @@ public class NoticeController {
 
     // 게시글 선택 조회
     @GetMapping("/notices/{id}")
-    public NoticeResponseDto getaNotice(@PathVariable Long id) {
+    public NoticeResponseDto getNotice(@PathVariable Long id) {
         return noticeService.getNotice(id);
     }
 
