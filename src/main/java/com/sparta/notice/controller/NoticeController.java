@@ -20,7 +20,7 @@ public class NoticeController {
         this.noticeService = noticeService;
     }
 
-    // 게시글 작성 //
+    // 게시글 작성
     @PostMapping("/notices")
     public NoticeResponseDto createNotice(@RequestBody NoticeRequestDto requestDto) {
         return noticeService.createNotice(requestDto);
